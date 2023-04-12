@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Todos</title>
+  </head>
+  <body>
+    <h1>Server infos</h1>
+    <p id="infos">Loading...</p>
+    <form id="infos-form">
+      <button type="submit">Refresh</button>
+    </form>
+    <br />
+    <h1>Todos</h1>
+
+    <!-- form for adding new todos -->
+    <form id="add-todo-form">
+      <label for="todo-text">New todo:</label>
+      <input type="text" id="todo-text" name="todoText" />
+      <button type="submit">Add</button>
+    </form>
+
+    <!-- container for displaying todos -->
+    <div id="todo-list"></div>
+
+    <script>
+      // define function to create a new todo item in the DOM
+      function createTodoElement(todo) {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span>${todo.text}</span>
+        `;
+        return li;
+      }
+
+      // fetch existing todos and add them to the DOM
+      fetch("http://%%HOSTNAME%%/todos")
+        .then((response) => response.json())
+        .then((todos) => {
+            const todoList = document.getElementById("todo-list");
+            todos.forEach((todo) => {
+              const todoElement = createTodoElement(todo);
+              todoList.appendChild(todoElement);
+            });
+          });
+      fetchInfo();
+
+      // fetch server infos
+      function fetchInfo() {
+        fetch("http://%%HOSTNAME%%/host-info")
+          .then((response) => response.json())
+          .then((resp) => {
+          const infos = document.getElementById("infos");
+          infos.innerText = `CPU USAGE : ${resp.cpu}%, hostname: ${resp.hostname}`;
+        });
+      }
+
+      const form = document.getElementById("infos-form");
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        fetchInfo();
+      });
+
+      // handle form submission to add a new todo
+      const addTodoForm = document.getElementById("add-todo-form");
+      addTodoForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const todoText = document.getElementById("todo-text").value;
+        if (todoText.trim() === "") {
+          return;
+        }
+
+        fetch(`http://%%HOSTNAME%%/create-todo?status=done&text=${todoText}`, {
+          method: "GET",
+        })
+          .then((response) => response.json())
+          .then((todos) => {
+            const todoList = document.getElementById("todo-list");
+            todoList.innerHTML = '';
+            todos.forEach((todo) => {
+              const todoElement = createTodoElement(todo);
+              todoList.appendChild(todoElement);
+            });
+            addTodoForm.reset();
+          });
+      });
+    </script>
+  </body>
+</html>
+
+
+
+
