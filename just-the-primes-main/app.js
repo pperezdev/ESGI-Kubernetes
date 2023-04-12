@@ -4,6 +4,27 @@ const osUtils = require('os-utils');
 const os = require('os');
 const cors = require("cors");
 
+const mysql = require('mysql');
+
+var con = mysql.createConnection({
+  host: "somewordpress",
+  user: "wordpress",
+  password: "wordpress",
+  database: "wordpress"
+});
+
+function connect(name, description, status){
+  con.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected!");
+    var sql = `INSERT INTO D_TODO (NAME, DESCRIPTION, STATUS) VALUES ("${name}", "${description}", "${status}")`;
+    con.query(sql, function (err, result) {
+      if (err) throw err;
+      console.log("1 record inserted");
+    });
+  });
+}
+
 app.use(cors());
 
 function isPrime(num) {
