@@ -3,6 +3,8 @@ services:
     build: ./just-a-frontend-main
     ports:
       - "8080:8080"
+    environment:
+      - BACKEND_HOST=${BACKEND_HOST}
   api:
     build: ./just-the-primes-main
     ports:

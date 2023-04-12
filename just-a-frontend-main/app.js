@@ -17,5 +17,6 @@ app.get("/", (req, res) => {
 
 // start the server
 app.listen(8080, () => {
+  console.log(process.env.BACKEND_HOST)
   console.log("Frontend listening on port 8080");
 });
